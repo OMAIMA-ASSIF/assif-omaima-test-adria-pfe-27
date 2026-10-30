@@ -28,7 +28,7 @@ public class Transaction {
     private String currency;
     private String merchantCategory;
     private String country;
-    private Date createdAt;
+    private Instant createdAt;
 
     @Transient
     private Account accountDetails;
