@@ -52,4 +52,9 @@ public class AccountRestController {
         accountService.deleteAccount(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/balance")
+    public ResponseEntity<Account> updateBalance(@PathVariable UUID id, @RequestParam double amount) {
+        return ResponseEntity.ok(accountService.updateBalance(id, amount));
+    }
 }
