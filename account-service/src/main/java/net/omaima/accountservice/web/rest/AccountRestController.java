@@ -16,6 +16,10 @@ import java.util.UUID;
 public class AccountRestController {
     private AccountService accountService;
 
+    public AccountRestController(AccountService accountService){
+        this.accountService = accountService;
+    }
+
     @PostMapping
     public ResponseEntity<Account> createAccount(@RequestBody Account account) {
         return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.CREATED);

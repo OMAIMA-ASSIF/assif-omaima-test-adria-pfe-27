@@ -2,6 +2,7 @@ package net.omaima.accountservice;
 
 import net.omaima.accountservice.domain.Account;
 import net.omaima.accountservice.domain.AccountStatus;
+import net.omaima.accountservice.service.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,8 +18,9 @@ public class AccountServiceApplication {
     }
 
     @Bean
-    CommandLineRunner run() {
+    CommandLineRunner run(AccountService accountService) {
         return args -> {
+
             List<Account> testAccounts = List.of(
                     Account.builder()
                             .customerReference("CUST-OMAIMA-001")
@@ -39,6 +41,12 @@ public class AccountServiceApplication {
                             .balance(0.0)
                             .build()
             );
+
+            testAccounts.forEach(account -> {
+                accountService.createAccount(account);
+                System.out.println("Compte sauvegardé : " + account.getCustomerReference());
+            });
+
         };
     }
 }

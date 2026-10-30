@@ -1,18 +1,21 @@
-package net.omaima.accountservice.service;
+package net.omaima.accountservice.service.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import net.omaima.accountservice.domain.Account;
 import net.omaima.accountservice.domain.AccountStatus;
 import net.omaima.accountservice.repository.AccountRepository;
+import net.omaima.accountservice.service.AccountService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+public class AccountServiceImpl implements AccountService {
 
-public class AccountServiceImpl implements AccountService{
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     @Transactional
@@ -24,17 +27,20 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Account getAccountById(UUID id) {
         return accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Compte non trouvé avec l'ID : " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Account> getAccountsByCustomer(String customerReference) {
         return accountRepository.findByCustomerReference(customerReference);
     }
@@ -42,7 +48,7 @@ public class AccountServiceImpl implements AccountService{
     @Override
     @Transactional
     public Account updateAccountStatus(UUID id, AccountStatus newStatus) {
-        Account account = getAccountById(id);
+        Account account = getAccountById(id); // Réutilise la méthode qui vérifie l'existence
         account.setStatus(newStatus);
         return accountRepository.save(account);
     }
@@ -51,6 +57,7 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public Account updateBalance(UUID id, double amount) {
         Account account = getAccountById(id);
+        // Ajoute le montant au solde existant (peut être négatif pour un débit)
         account.setBalance(account.getBalance() + amount);
         return accountRepository.save(account);
     }
@@ -59,7 +66,7 @@ public class AccountServiceImpl implements AccountService{
     @Transactional
     public void deleteAccount(UUID id) {
         if (!accountRepository.existsById(id)) {
-            throw new RuntimeException("Account not found with id: " + id);
+            throw new RuntimeException("Impossible de supprimer : Compte non trouvé avec l'ID : " + id);
         }
         accountRepository.deleteById(id);
     }
